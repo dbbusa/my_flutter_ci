@@ -54,7 +54,7 @@ jobs:
       uses: geekyeggo/delete-artifact@v1
       if: always()
       with:
-        name: App
+        name: windows-installer
         failOnError: false
 
     strategy:
