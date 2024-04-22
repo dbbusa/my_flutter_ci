@@ -46,7 +46,8 @@ jobs:
         $file = "${{ github.workspace }}/MyAppInstaller.zip"
         $message = "New Windows installer available for download!\n\nProject: Flutter - Application\nCommit Message: ${{ github.event.head_commit.message }}\nCommitted Actor: ${{ github.actor }}"
         $url = "https://api.telegram.org/bot$token/sendDocument"
-        curl -F "chat_id=$chat_id" -F "caption=$message" -F "document=@$file" $url
+        $curl_command = "curl.exe -F 'chat_id=$chat_id' -F 'caption=$message' -F 'document=@$file' $url"
+        Invoke-Expression -Command $curl_command
 
     - name: Delete Artifacts
       uses: geekyeggo/delete-artifact@v1
