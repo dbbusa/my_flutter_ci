@@ -37,18 +37,16 @@ jobs:
       with:
         name: windows-installer
         path: ${{ github.workspace }}/MyAppInstaller.zip
-    - name: send success message
-      uses: appleboy/telegram-action@master
-      if: success()
-      with:
-        to: ${{ secrets.MESSAGEID }}
-        token: ${{ secrets.BOTTOKEN }}
-        message: |
-          Project: Flutter - Application
-          Commit Message: ${{ github.event.head_commit.message }}
-          Commited Actor: ${{ github.actor }}
-          Build Status: ${{ job.status }}
-        document: ${{ github.workspace }}/MyAppInstaller.zip
+
+    - name: Send Telegram message
+      if: always()
+      run: |
+        $token = ${{ secrets.BOTTOKEN }}
+        $chat_id = ${{ secrets.MESSAGEID }}
+        $file = "${{ github.workspace }}/MyAppInstaller.zip"
+        $message = "New Windows installer available for download!\n\nProject: Flutter - Application\nCommit Message: ${{ github.event.head_commit.message }}\nCommitted Actor: ${{ github.actor }}"
+        $url = "https://api.telegram.org/bot$token/sendDocument?chat_id=$chat_id&caption=$message"
+        Invoke-RestMethod -Method Post -Uri $url -InFile $file
 
     - name: Delete Artifacts
       uses: geekyeggo/delete-artifact@v1
