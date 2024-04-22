@@ -1,0 +1,62 @@
+name: Build Installers
+
+on:
+  push:
+    branches:
+    - main # Change this to your main branch name
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: 'stable'
+
+    - name: Install dependencies
+      run: flutter pub get
+
+    - name: Build Windows installer
+      if: matrix.os == 'windows'
+      run: flutter build windows
+
+    - name: Package installers
+      if: matrix.os == 'windows'
+      run: |
+        mkdir -p MyAppInstaller
+        cp -R build/windows/Runner/Release MyAppInstaller
+        7z a MyAppInstaller.zip MyAppInstaller
+
+    - name: Upload installers
+      uses: actions/upload-artifact@v2
+      with:
+        name: windows-installer
+        path: ${{ github.workspace }}/MyAppInstaller.zip
+    - name: send success message
+      uses: appleboy/telegram-action@master
+      if: success()
+      with:
+        to: ${{ secrets.MESSAGEID }}
+        token: ${{ secrets.BOTTOKEN }}
+        message: |
+          Project: Flutter - Application
+          Commit Message: ${{ github.event.head_commit.message }}
+          Commited Actor: ${{ github.actor }}
+          Build Status: ${{ job.status }}
+        document: ${{ github.workspace }}/MyAppInstaller.zip
+
+    - name: Delete Artifacts
+      uses: geekyeggo/delete-artifact@v1
+      if: always()
+      with:
+        name: App
+        failOnError: false
+
+    strategy:
+      matrix:
+        os: ['windows']
