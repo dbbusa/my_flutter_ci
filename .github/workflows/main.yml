@@ -45,8 +45,8 @@ jobs:
         $chat_id = ${{ secrets.MESSAGEID }}
         $file = "${{ github.workspace }}/MyAppInstaller.zip"
         $message = "New Windows installer available for download!\n\nProject: Flutter - Application\nCommit Message: ${{ github.event.head_commit.message }}\nCommitted Actor: ${{ github.actor }}"
-        $url = "https://api.telegram.org/bot$token/sendDocument?chat_id=$chat_id&caption=$message"
-        Invoke-RestMethod -Method Post -Uri $url -InFile $file
+        $url = "https://api.telegram.org/bot$token/sendDocument"
+        curl -F "chat_id=$chat_id" -F "caption=$message" -F "document=@$file" $url
 
     - name: Delete Artifacts
       uses: geekyeggo/delete-artifact@v1
