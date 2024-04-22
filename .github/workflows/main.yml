@@ -29,6 +29,7 @@ jobs:
       if: matrix.os == 'windows'
       run: |
         mkdir -p MyAppInstaller
+        copy /Y build\windows\Runner\Release MyAppInstaller
         cp -R build/windows/Runner/Release MyAppInstaller
         7z a MyAppInstaller.zip MyAppInstaller
 
