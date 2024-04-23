@@ -41,7 +41,7 @@ jobs:
     - name: Send Telegram message
       if: always()
       run: |
-        curl -s -X POST https://api.telegram.org/bot${{ secrets.BOTTOKEN }}/sendMessage -d chat_id=${{ secrets.MESSAGEID }} -d text="New Windows installer available for download!\n\nProject: Flutter - Application\Committed Actor: ${{ github.actor }}" > /dev/null
+        curl -s -X POST https://api.telegram.org/bot${{secrets.BOTTOKEN}}/sendMessage -d chat_id=${{secrets.CHATID}} -d text="New Windows installer available for download!\n\nProject: Flutter - Application\Committed Actor: ${{ github.actor }}" > /dev/null
 
 
     - name: Delete Artifacts
