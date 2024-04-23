@@ -38,8 +38,10 @@ jobs:
         path: ${{ github.workspace }}/MyAppInstaller.zip
 
     - name: Send to Telegram
-      if: always()
       uses: actions/setup-node@v2
+
+    - name: Send to Telegram
+      if: always()
       with:
         node-version: '14'
       env:
