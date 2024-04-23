@@ -1,4 +1,4 @@
-name: Build Installers
+name: Build and Send Windows
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
@@ -18,39 +18,16 @@ jobs:
       with:
         flutter-version: '3.16.9'
 
-    - name: Install dependencies
+    - name: Get dependencies
       run: flutter pub get
 
-    - name: Build Windows installer
-      if: matrix.os == 'windows'
+    - name: Build Windows
       run: flutter build windows
 
-    - name: Package installers
-      if: matrix.os == 'windows'
-      run: |
-        mkdir MyAppInstaller
-        xcopy /E /Y build\windows\Runner\Release MyAppInstaller
-        7z a MyAppInstaller.zip MyAppInstaller
-
-    - name: Upload installers
-      uses: actions/upload-artifact@v2
+    - name: Send build to Telegram
+      uses: appleboy/telegram-action@master
       with:
-        name: windows-installer
-        path: ${{ github.workspace }}/MyAppInstaller.zip
-
-    - name: Send Telegram message
-      if: always()
-      run: |
-        curl -s -X POST https://api.telegram.org/bot${{secrets.BOTTOKEN}}/sendMessage -d "chat_id=${{secrets.CHATID}}&text=New Windows installer available for download!\n\nProject: Flutter - Application\Committed Actor: ${{ github.actor }}" > nul
-
-
-    - name: Delete Artifacts
-      uses: geekyeggo/delete-artifact@v1
-      if: always()
-      with:
-        name: windows-installer
-        failOnError: false
-
-    strategy:
-      matrix:
-        os: ['windows']
+        to: ${{ secrets.CHATID }}
+        token: ${{ secrets.BOTTOKEN }}
+        document: "build/windows/runner/Release/app.exe"
+        message: "Hello there...!!!"
