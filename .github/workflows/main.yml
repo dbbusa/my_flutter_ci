@@ -1,4 +1,4 @@
-name: Build and Send Windows
+name: Build Installers
 
 on:
   push:
@@ -16,18 +16,46 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.16.9' # Specify the Flutter version you want to use
+        flutter-version: '3.16.9'
 
-    - name: Get dependencies
+    - name: Install dependencies
       run: flutter pub get
 
-    - name: Build Windows
+    - name: Build Windows installer
+      if: matrix.os == 'windows'
       run: flutter build windows
 
-    - name: Send build to Telegram
-      uses: appleboy/telegram-action@master
+    - name: Package installers
+      if: matrix.os == 'windows'
+      run: |
+        mkdir MyAppInstaller
+        xcopy /E /Y build\windows\Runner\Release MyAppInstaller
+        7z a MyAppInstaller.zip MyAppInstaller
+    - name: Upload installers
+      uses: actions/upload-artifact@v2
       with:
-        to: ${{ secrets.CHATID }}
-        token: ${{ secrets.BOTTOKEN }}
-        document: "build/windows/runner/Release/app.exe"
-        message: "Here is the latest Windows build for our Flutter project!"
+        name: windows-installer
+        path: ${{ github.workspace }}/MyAppInstaller.zip
+
+    - name: Send to Telegram
+      if: always()
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'
+      env:
+        TELEGRAM_BOT_TOKEN: ${{ secrets.BOTTOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.MESSAGEID }}
+      run: |
+        npm install -g telegram-bot-api
+        telegram-bot-api sendDocument --document ${{ github.workspace }}/MyAppInstaller.zip --chat_id $TELEGRAM_CHAT_ID --token $TELEGRAM_BOT_TOKEN
+
+    - name: Delete Artifacts
+      uses: geekyeggo/delete-artifact@v1
+      if: always()
+      with:
+        name: windows-installer
+        failOnError: false
+
+    strategy:
+      matrix:
+        os: ['windows']
