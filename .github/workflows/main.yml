@@ -3,7 +3,7 @@ name: Build and Send Windows
 on:
   push:
     branches:
-    - main # Change this to your main branch
+    - master
 
 jobs:
   build:
