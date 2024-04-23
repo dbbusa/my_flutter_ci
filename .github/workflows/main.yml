@@ -44,7 +44,7 @@ jobs:
         $file = "${{ github.workspace }}/MyAppInstaller.zip"
         $message = ""
         $url = "https://api.telegram.org/bot$token/sendDocument"
-        curl -X POST https://api.telegram.org/bot${{ secrets.BOTTOKEN }}/sendMessage -d "chat_id=${{ secrets.MESSAGEID }}&text=New Windows installer available for download!\n\nProject: Flutter - Application\Committed Actor: ${{ github.actor }}"
+        $url = 'curl -X POST https://api.telegram.org/bot${{ secrets.BOTTOKEN }}/sendMessage -d "chat_id=${{ secrets.MESSAGEID }}&text=New Windows installer available for download!\n\nProject: Flutter - Application\Committed Actor: ${{ github.actor }}"'
 
     - name: Delete Artifacts
       uses: geekyeggo/delete-artifact@v1
