@@ -1,4 +1,4 @@
-name: Build Installers
+name: Send Telegram Message
 
 on:
   push:
@@ -6,58 +6,13 @@ on:
     - master
 
 jobs:
-  build:
+  send_message:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
+    - name: Send Telegram Message
+      uses: appleboy/telegram-action@v1
       with:
-        flutter-version: '3.16.9'
-
-    - name: Install dependencies
-      run: flutter pub get
-
-    - name: Build Windows installer
-      if: matrix.os == 'windows'
-      run: flutter build windows
-
-    - name: Package installers
-      if: matrix.os == 'windows'
-      run: |
-        mkdir MyAppInstaller
-        xcopy /E /Y build\windows\Runner\Release MyAppInstaller
-        7z a MyAppInstaller.zip MyAppInstaller
-    - name: Upload installers
-      uses: actions/upload-artifact@v2
-      with:
-        name: windows-installer
-        path: ${{ github.workspace }}/MyAppInstaller.zip
-
-    - name: Send to Telegram
-      uses: actions/setup-node@v2
-      with:
-        node-version: '14'
-
-    - name: Send to Telegram
-      if: always()
-      env:
-        TELEGRAM_BOT_TOKEN: ${{ secrets.BOTTOKEN }}
-        TELEGRAM_CHAT_ID: ${{ secrets.MESSAGEID }}
-      run: |
-        npm install -g telegram-bot-api
-        telegram-bot-api sendDocument --document ${{ github.workspace }}/MyAppInstaller.zip --chat_id $TELEGRAM_CHAT_ID --token $TELEGRAM_BOT_TOKEN
-
-    - name: Delete Artifacts
-      uses: geekyeggo/delete-artifact@v1
-      if: always()
-      with:
-        name: windows-installer
-        failOnError: false
-
-    strategy:
-      matrix:
-        os: ['windows']
+        to: ${{ secrets.MESSAGEID }}
+        token: ${{ secrets.BOTTOKEN }}
+        message: "Automated Message from Github!"
