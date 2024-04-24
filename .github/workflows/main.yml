@@ -15,7 +15,7 @@ jobs:
 
     - name: Run PowerShell Script
       shell: pwsh
-      run: .\send_telegram_message.ps1
+      run: ./ps/send_telegram_message.ps1
       env:
         TELEGRAM_BOT_TOKEN: ${{ secrets.BOTTOKEN }}
         TELEGRAM_CHAT_ID: ${{ secrets.MESSAGEID }}
