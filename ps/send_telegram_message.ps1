@@ -6,7 +6,7 @@ $chatId = $env:TELEGRAM_CHAT_ID
 $message = "Hello from GitHub Actions!"
 
 # Construct the URL to send the message via Telegram Bot API
-$url = "https://api.telegram.org/bot$token/sendMessage?chat_id=$chatId&text=$message"
+$url = "https://api.telegram.org/bot $token/sendMessage?chat_id=$chatId&text=$message"
 
 # Send the HTTP request to the Telegram Bot API
 $response = Invoke-RestMethod -Uri $url -Method Get
