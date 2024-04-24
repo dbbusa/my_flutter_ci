@@ -10,9 +10,12 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Send Telegram Message
-      uses: appleboy/telegram-action@master
-      with:
-        to: ${{ secrets.MESSAGEID }}
-        token: ${{ secrets.BOTTOKEN }}
-        message: "Automated Message from Github!"
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Run PowerShell Script
+      shell: pwsh
+      run: .\send_telegram_message.ps1
+      env:
+        TELEGRAM_BOT_TOKEN: ${{ secrets.BOTTOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.MESSAGEID }}
